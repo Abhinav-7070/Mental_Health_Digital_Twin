@@ -1,77 +1,77 @@
-# Mental_Health_Digital_Twin
-Text Pipeline
+# Encoder Module Overview
 
-The following features are extracted from the journal:
+The encoder converts raw user inputs into a fixed-size feature vector that can be used by the baseline model, anomaly detector and temporal tracker.
 
-Feature	Size
+---
 
-SBERT Embedding	384
+## Inputs
 
-Emoiton Detection Model	28
+* Journal text (**required**)
+* Audio recording (**optional**)
+* Sleep hours *(optional)*
+* Sleep quality *(optional)*
+* Activity level *(optional)*
+* Music mood score *(optional)*
 
-VADER Sentiment	7
+---
 
-Lexical Diversity	2
+# Text Pipeline
 
-Readability	3
+| Feature                 | Dimensions |
+| ----------------------- | ---------: |
+| SBERT Embedding         |        384 |
+| GoEmotions Model        |         28 |
+| VADER Sentiment         |          7 |
+| Lexical Diversity       |          2 |
+| Readability             |          3 |
+| First Person Pronouns   |          2 |
+| Length Features         |          3 |
+| Punctuation Features    |          4 |
+| Time Metadata           |          3 |
+| Health Features + Masks |          8 |
 
-First Person Pronouns	2
+**Total Text Features = 444**
 
-Length Features	3
+---
 
-Punctuation Features	4
+# Audio Pipeline (Optional)
 
-Time Metadata	3
+### Whisper
 
-Health Features + Masks	8
+* Speech transcription
+* Language detection
+* Word timestamps
 
-Total text features = 444
+### Acoustic Features (7)
 
-Audio Pipeline (Optional)
+* Speech Rate
+* Pause Ratio
+* Average Pause Length
+* Mean Pitch
+* Pitch Variability
+* Mean Loudness
+* Loudness Variability
 
-If an audio file is provided:
+### Speech Emotion Recognition (4)
 
-Whisper-Speech transcription
+Model: **superb/wav2vec2-base-superb-er**
 
-Language detection
+* Angry
+* Happy
+* Neutral
+* Sad
 
-Word timestamps
+An **11-dimensional audio mask** is also appended to indicate whether audio features are present.
 
-Acoustic Features (7)--
+---
 
-Speech rate
+# Final Feature Vector
 
-Pause ratio
+| Component          | Dimensions |
+| ------------------ | ---------: |
+| Text Features      |        444 |
+| Audio Features     |         11 |
+| Audio Feature Mask |         11 |
+| **Total**          |    **466** |
 
-Average pause length
-
-Mean pitch
-
-Pitch variation
-
-Mean loudness
-
-Loudness variation
-
-Speech Emotion Recognition (4)
-
-Using superb/wav2vec2-base-superb-er(A pretrained model)
-
-Angry
-
-Happy
-
-Neutral
-
-Sad
-
-Audio feature mask (11) is also added to indicate whether audio was available.
-
-Final Feature Vector
-Text Features        : 444
-Audio Features       : 11
-Audio Feature Mask   : 11
-----------------------------
-Total                : 466
-
-If no audio is provided, the audio features are replaced with zeros and the mask is set to 0, keeping the output size fixed.
+If no audio is provided, the audio feature vector is filled with zeros and the corresponding mask is set to 0, ensuring that the output vector always remains **466 dimensions**.
