@@ -5,6 +5,7 @@ The following features are extracted from the journal:
 
 Feature	Size
 SBERT Embedding	384
+
 GoEmotions	28
 VADER Sentiment	7
 Lexical Diversity	2
